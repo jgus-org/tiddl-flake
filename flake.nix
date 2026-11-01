@@ -2,8 +2,10 @@
   description = "tiddl: CLI Tidal downloader (oskvr37/tiddl), the download backend Tidarr shells out to.";
 
   inputs = {
-    # Unfollowed on purpose: flake-lib resolves the org formatter from its own nixpkgs pin.
-    flake-lib.url = "github:jgus-org/flake-lib/v1";
+    flake-lib = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:jgus-org/flake-lib/v1";
+    };
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
