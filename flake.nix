@@ -14,44 +14,48 @@
       nixpkgs,
     }:
     flake-lib.lib.mkPythonFlake {
-      inherit
-        nixpkgs
-        self
-        ;
-      package = {
-        attr = "tiddl";
-        buildSystem =
-          ps: with ps; [
-            setuptools
-            wheel
-          ];
-        dependencies =
-          ps: with ps; [
-            aiofiles
-            aiohttp
-            m3u8
-            mutagen
-            pydantic
-            requests
-            requests-cache
-            typer
-          ];
-        description = "tiddl: CLI Tidal downloader (oskvr37/tiddl), the download backend Tidarr shells out to.";
-        # Upstream pins exact lower bounds we may exceed in nixpkgs; the CLI works fine across them.
-        extra.dontCheckRuntimeDeps = true;
-        kind = "pythonApplication";
-        meta = {
-          homepage = "https://github.com/oskvr37/tiddl";
-          license = nixpkgs.lib.licenses.asl20;
-          mainProgram = "tiddl";
+      inherit nixpkgs self;
+      payload.packages =
+        {
+          buildApplication,
+          pkgs,
+          python,
+          ...
+        }:
+        {
+          tiddl = buildApplication {
+            build-system = with python; [
+              setuptools
+              wheel
+            ];
+            dependencies = with python; [
+              aiofiles
+              aiohttp
+              m3u8
+              mutagen
+              pydantic
+              requests
+              requests-cache
+              typer
+            ];
+            # Upstream pins exact lower bounds we may exceed in nixpkgs; the CLI works fine across them.
+            dontCheckRuntimeDeps = true;
+            meta = {
+              description = "tiddl: CLI Tidal downloader (oskvr37/tiddl), the download backend Tidarr shells out to.";
+              homepage = "https://github.com/oskvr37/tiddl";
+              license = pkgs.lib.licenses.asl20;
+              mainProgram = "tiddl";
+            };
+            pname = "tiddl";
+            pyproject = true;
+          };
         };
-      };
-      pin = import ./pin.nix;
-      source = {
+      updateBranches.minimumTrackingVersion = "3.4.3";
+      upstream = {
         format = "sdist";
+        pin = import ./pin.nix;
         pname = "tiddl";
         type = "pypi";
       };
-      updateBranches.minimumTrackingVersion = "3.4.3";
     };
 }
